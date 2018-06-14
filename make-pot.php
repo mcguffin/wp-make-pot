@@ -2,6 +2,8 @@
 <?php
 
 require_once('autoload.php');
+require_once('include/functions.php');
+
 
 use PhpParser\NodeTraverser;
 use PhpParser\ParserFactory;
@@ -29,13 +31,37 @@ $type = null;
 
 if ( file_exists( abspath( 'functions.php' ) ) && file_exists( abspath( 'style.css' ) ) ) {
 	$type = 'theme';
+	$project_meta = get_file_data( abspath( 'style.css' ), array(
+		'project'		=> 'Plugin Name',
+		'project_version'	=> 'version',
+	));
+	vaR_dump($meta);
 } else {
 	$type = 'plugin';
+	foreach ( glob( abspath('*.*') ) as $test_file ) {
+
+		$project_meta = get_file_data( $test_file, array(
+			'project'		=> 'Plugin Name',
+			'project_version'	=> 'Version',
+		));
+
+		if ( ! empty($project_meta['project_version'])) {
+			break;
+		}
+	}
 }
 $php_files = rglob(abspath('*.php'));
 
 
 $fn_calls = GettextFnCalls::instance();
+$fn_calls->pot_headers = array(
+	'year'				=> date('Y'),
+	'author'			=> exec('whoami'),
+	'creation_date'		=> date('c'),
+	'revision_date'		=> date('c'),
+	'generator'			=> 'WP Make Pot',
+) + $project_meta;
+
 
 if ( isset( $argv[1] ) ) {
 	$fn_calls->textdomain = $argv[1];

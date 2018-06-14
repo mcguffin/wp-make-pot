@@ -2,6 +2,7 @@
 
 use PhpParser\Node;
 
+
 class GettextFnCalls {
 
 	private static $instance = null;
@@ -14,22 +15,31 @@ version (=theme version)
 POT-Creation-Date
 X-Generator
 	*/
+	public $pot_headers = array(
+		'year'				=> '',
+		'author'			=> '',
+		'creation_date'		=> '',
+		'revision_date'		=> '',
+		'generator'			=> '',
+		'project'			=> '',
+		'project_version'	=> '',
+	);
 
-	private $pot_header = '# Copyright (C) 2018 Jörn Lund
+	private $pot_header = '# Copyright (C) {year} {author}
 # This file is distributed under the GNU General Public License v2 or later.
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: _bs v0.0.1\n"
+"Project-Id-Version: {project} v{project_version}\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-06 15:49+0100\n"
-"PO-Revision-Date: 2015-12-31 12:00+0100\n"
+"POT-Creation-Date: {creation_date}\n"
+"PO-Revision-Date: {revision_date}\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Poedit 1.8.1\n"
+"X-Generator: {generator}\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;"
 "_n_noop:1,2;_c;_nc:4c,1,2;_x:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2;_ex:1,2c;"
@@ -85,6 +95,14 @@ msgstr ""
 
 	private $fn_calls = [];
 
+	private function get_pot_header() {
+		$header = $this->pot_header;
+		foreach ( $this->pot_headers as $k => $v ) {
+			$header = str_replace( '{'.$k.'}', $v, $header );
+		}
+		return $header;
+	}
+
 	public function add( Node $node, $file ) {
 		$call = new GettextFnCall( $node, $file );
 		if ( ! $call->valid ) {
@@ -101,7 +119,7 @@ msgstr ""
 
 	public function __toString() {
 		$out = '';
-		$out .= $this->pot_header . "\n";
+		$out .= $this->get_pot_header() . "\n";
 		$out .= "\n";
 		foreach ( $this->fn_calls as $fn_call ) {
 			if ( $this->textdomain === $fn_call->textdomain ) {
