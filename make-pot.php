@@ -32,10 +32,9 @@ $type = null;
 if ( file_exists( abspath( 'functions.php' ) ) && file_exists( abspath( 'style.css' ) ) ) {
 	$type = 'theme';
 	$project_meta = get_file_data( abspath( 'style.css' ), array(
-		'project'		=> 'Plugin Name',
+		'project'		=> 'Theme Name',
 		'project_version'	=> 'version',
 	));
-	vaR_dump($meta);
 } else {
 	$type = 'plugin';
 	foreach ( glob( abspath('*.*') ) as $test_file ) {
