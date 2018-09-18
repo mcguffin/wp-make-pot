@@ -57,7 +57,11 @@ class GettextFnCall {
 		} else {
 			$this->textdomain = null;
 		}
-		$this->id = $this->textdomain . ':' . implode( ':', $parse_rules ) . ':' . md5( serialize( $this->message ) );
+		$msg_id = isset( $this->message['singular'] ) ? $this->message['singular'] : $this->message['string'];
+		if ( isset( $this->message['context'] ) ) {
+			$msg_id .= ':'.$this->message['context'];
+		}
+		$this->id = $this->textdomain . ':' . urlencode( $msg_id );
 		$this->valid = true;
 	}
 
@@ -92,15 +96,18 @@ class GettextFnCall {
 					break;
 				case 'singular':
 					$is_plural = true;
-					$body .= "msgid \"{$msg}\"\n";
+					$body .= "msgid " . $this->fmt_msg($msg);
+//					$body .= "msgid \"{$msg}\"\n";
 					break;
 				case 'plural':
-					$body .= "msgid_plural \"{$msg}\"\n";
+					$body .= "msgid_plural " . $this->fmt_msg($msg);
+//					$body .= "msgid_plural \"{$msg}\"\n";
 					$is_plural = true;
 					break;
 				case 'context':
 					// prepend!
-					$body = "msgctxt \"{$msg}\"\n" . $body;
+					$body .= "msgctxt " . $this->fmt_msg($msg);
+//					$body = "msgctxt \"{$msg}\"\n" . $body;
 					break;
 			}
 		}

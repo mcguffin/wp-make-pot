@@ -7,6 +7,7 @@ require_once('include/functions.php');
 
 use PhpParser\NodeTraverser;
 use PhpParser\ParserFactory;
+use PhpParser\Error;
 
 define( 'ROOT', getcwd() );
 define( 'DS', DIRECTORY_SEPARATOR );
@@ -72,19 +73,21 @@ if ( isset( $argv[1] ) ) {
 foreach ( $php_files as $php_file ) {
 	$parser = (new ParserFactory)->create( ParserFactory::PREFER_PHP7 );
 	$code = file_get_contents( $php_file );
-	$all_ast = $parser->parse($code);
-	$visitor = new GettextCallNodeVisitor();
-	$traverser = new NodeTraverser;
-	$traverser->addVisitor($visitor);
-	$traverser->traverse($all_ast);
-	$ast = $visitor->get_func_calls( array_keys( GettextFnCalls::gettextFunctions() ) );
-
 	try {
-	   // $ast = $parser->parse($code);
+		$all_ast = $parser->parse($code);
+		$visitor = new GettextCallNodeVisitor();
+		$traverser = new NodeTraverser;
+		$traverser->addVisitor($visitor);
+		$traverser->traverse($all_ast);
+		$ast = $visitor->get_func_calls( array_keys( GettextFnCalls::gettextFunctions() ) );
 	} catch (Error $error) {
-	    echo "Parse error: {$error->getMessage()}\n";
-	    continue;
+		echo "Parse error: {$error->getMessage()}\n";
+		echo $error->getTraceAsString();
+		echo $php_file;
+		echo $code;
+		exit();
 	}
+
 	foreach ( $ast as $node ) {
 		$fn_calls->add( $node, str_replace( ROOT . DS, '', $php_file ) );
 	}
