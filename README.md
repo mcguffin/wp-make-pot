@@ -1,5 +1,9 @@
-POT Creator Script
-==================
+POT Creator Script (†)
+======================
+
+**Deprecated!**  
+Use `wp 118n make-pot` instead.
+
 
 Installation:
 
@@ -22,4 +26,3 @@ Pull requests are welcome.
 I will test and merge them if I think it makes sense.
 
 Anything else will be sympathetically ignored.
-
